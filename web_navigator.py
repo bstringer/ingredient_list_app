@@ -17,6 +17,7 @@ def search_recipe(searchword):
     driver = webdriver.Chrome(PATH);
     driver.get("https://www.allrecipes.com/")
     collect_recipes = []
+    collect_recipes_obj = {}
 
     #Click to open up the searchbar
     search_icon = driver.find_element_by_class_name("general-search__icon-button")
@@ -34,13 +35,16 @@ def search_recipe(searchword):
         recipes = search_results.find_elements_by_tag_name("a")
         for recipe in recipes:
             meal = recipe.find_element_by_class_name("card__title-text")
+            image = recipe.find_element_by_tag_name("img").get_attribute("src")
+            if image != None:
+                collect_recipes_obj[meal.text] = image
             collect_recipes.append(meal.text)
     except Exception as e:
         print("error: ", e, flush=True)
         driver.quit()
 
     driver.quit()
-    return collect_recipes
+    return collect_recipes_obj
 
 # list = search_recipe("meatloaf")
 # print("list: ", list, flush=True)
