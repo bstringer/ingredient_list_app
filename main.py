@@ -1,3 +1,4 @@
+import json
 import os
 import datetime
 from flask import Flask, render_template, request, jsonify, Response, redirect, url_for
@@ -7,12 +8,23 @@ import web_navigator
 app = Flask(__name__)
 
 ### Routing ###
-
 ################ START PAGES!#################################
+
 @app.route("/Recipe_Collector",methods = ["GET"])
 def home_path():
     return render_template('searchpage.html')
 
+##############################################################
+
+@app.route("/collection", methods= ['GET', 'POST'])
+def collection():
+    if request.method == 'POST':
+        req_dat = request.form.getlist('chkbx')
+        print("req_dat P", req_dat, flush=True)
+        return_package = web_navigator.web_collect(req_dat)
+    return render_template('resultsPage.html', return_package=return_package)
+
+##############################################################
 
 @app.route('/pass_data', methods= ['GET', 'POST'])
 def pass_data():
@@ -20,14 +32,17 @@ def pass_data():
     if request.method == 'POST':
         req_dat = request.get_json()
         print("POSTED DATA: ", req_dat, flush=True)
-        menu_list = web_navigator.search_recipe(req_dat)
-        return jsonify(menu_list)
+        if req_dat['location'] == "webNavSearch":
+            return_package = web_navigator.search_recipe(req_dat['package'])
+        else:
+            return_package = "Error occured"
+        return jsonify(return_package)
     #GET request
     else:
         message = {'greeting': 'Error from /Pass_data in main.py'}
         return jsonify(message)
     
-################ START PAGES!#################################
+################ END PAGES!#################################
 
 
 

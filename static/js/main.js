@@ -1,9 +1,7 @@
 
 function ajax_return(url, send_package, successFunc, errorFunc) {
-    url_send = "http://localhost:9000" + url
-    console.log("url_send", url_send)
     return $.ajax({
-          url: url_send,
+          url: url,
           data: JSON.stringify(send_package),
           type: "POST",
           dataType: "json",
@@ -22,9 +20,11 @@ function ajax_return(url, send_package, successFunc, errorFunc) {
 
 function search_form(){
     $('#table_here').html("<h3>Working...</h3>")
-    var send_package = $('#searchbar').val()
-    console.log("send_package", send_package)
-    url = "/pass_data"
+    var send_package = {
+        "location": "webNavSearch",
+        "package": $('#searchbar').val()
+    }
+    url = "http://localhost:9000/pass_data"
     ajax_return(url, send_package, create_table, failpass)
     }
 
@@ -36,7 +36,9 @@ function failpass(error){
 function create_table(recieve_list){
     console.log("recieve_list", recieve_list)
     var request_table = ""
-    request_table =  '<table class="table table-hover">\
+    request_table += '<form method="POST" id="myForm" action="/collection">'
+    request_table += '<button id="render_button" class="btn btn-success btn-lg" type="submit">GET MEAL</button>'
+    request_table +=  '<table class="table table-hover">\
                             <thead>\
                                 <tr>\
                                 <th scope="col">Select</th>\
@@ -46,18 +48,34 @@ function create_table(recieve_list){
                             </thead>\
                             <tbody>'
 
-
     for (const meal in recieve_list) {
-        request_table += '<tr class="table-default"><td>'
-        request_table +='<div class="form-check">\
-                        <input id="'+meal+'" class="form-check-input" type="checkbox" value="">\
-                        </div></td>'
+        request_table += '<tr class="table-default" onclick="selectRow(this)"><td>'
+        request_table +='<div class="form-check">'
+        request_table +="<input class='form-check-input' name='chkbx' type='checkbox' value='"+recieve_list[meal]["link"]+"'>\
+                        </div></td>"
         request_table += '<td>'+meal+'</td>'
-        request_table += '<td> <img height="150" width="170" src="'+recieve_list[meal]+'"> </td></tr>'
+        request_table += '<td> <img height="150" width="200" src="'+recieve_list[meal]["image"]+'"></td></tr>'
     }                            
-
     request_table += '</tbody></table>'
+    request_table +='</form>'
     $('#table_here').html(request_table)
-    render_button = '<button id="render_button" class="btn btn-info my-2 my-sm-0" onclick="render_menu()">Use</button>'
-    $('#render_button_location').html(render_button)
 }
+
+
+function selectRow(row){
+    var firstInput = row.getElementsByTagName('input')[0];
+    firstInput.checked = !firstInput.checked;
+}
+
+// function render_menu(){
+//     look_up_list = []
+//     checkboxes = document.getElementsByName("chkbx");
+//     selectedCboxes = Array.prototype.slice.call(checkboxes).filter(ch => ch.checked==true);
+//     for (let i = 0; i < selectedCboxes.length; i++) {
+//         look_up_list.push(selectedCboxes[i].id)
+//     }
+//     console.log("look_up_list: ", look_up_list)
+//     url = window.location.href + "/collection"
+//     ajax_return(url, look_up_list, console.log, console.log)
+// }
+
