@@ -19,9 +19,13 @@ def home_path():
 @app.route("/collection", methods= ['GET', 'POST'])
 def collection():
     if request.method == 'POST':
+        recipe_obj = {}
+        recipe_list = []
         req_dat = request.form.getlist('chkbx')
-        print("req_dat P", req_dat, flush=True)
-        return_package = web_navigator.web_collect(req_dat)
+        for each in req_dat:
+            recipe_obj.update(json.loads(each))
+        # print("req_dat P", recipe_obj, flush=True)
+        return_package = web_navigator.web_collect(recipe_obj)
     return render_template('resultsPage.html', return_package=return_package)
 
 ##############################################################
@@ -33,7 +37,7 @@ def pass_data():
         req_dat = request.get_json()
         print("POSTED DATA: ", req_dat, flush=True)
         if req_dat['location'] == "webNavSearch":
-            return_package = web_navigator.search_recipe(req_dat['package'])
+            return_package = web_navigator.search_recipe(req_dat)
         else:
             return_package = "Error occured"
         return jsonify(return_package)

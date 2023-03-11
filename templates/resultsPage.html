@@ -35,13 +35,11 @@
                                 </tr>\
                             </thead>\
                             <tbody>'
-      for (ingredient in return_package){
+      for (meal in return_package){
         result_table += '<tr class="table-default">'
-        result_table += '<td>'+ingredient+'</td>'
-
-        result_table += '<td>'
-        for (unit in return_package[ingredient])
-          result_table += unit+'<br>'
+        result_table += '<td><a href="'+return_package[meal]["link"]+'" target="_blank">'+meal+'</a></td>'
+        result_table += '<td><img height="150" width="200" src="'+return_package[meal]["image"]+'"></td>'
+        result_table += '<td>'+return_package[meal]["ingredients"]+'</td>'
         result_table += '</td></tr>'
       }
       result_table += '</tbody></table>'
